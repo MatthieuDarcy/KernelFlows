@@ -1,1 +1,81 @@
 
+Quick tutorial:
+
+0) Import.
+from KF_parametric_frechet import KernelFlowsP
+
+1) Initialize a instance. 
+Kernel name is a string, with the name of kernel (see below for a lists of available kernels). 
+mu is a np array with all the parameters of your kernel (depends on the kernel).
+
+mu = np.array([1.0])
+kernel_name = "RBF"
+KF = KernelFlowsP(kernel_name, mu)
+
+2) To learn the best parameters, call the fit function.
+iterations = 1000
+batch_size = 64
+mu_pred = KF.fit(X, Y, iterations, batch_size = batch_size)
+
+3) Generate a prediction using the optimized kernel.
+pred = KF. predict(X_test)
+
+
+Attributes:
+
+.fit()
+MOST IMPORTANT ARGUMENTS: X, Y, iterations, batch_size. Everything else can be left on default and yield good results.
+
+Mandatory arguments:
+
+X: independent variables, np array of dimensions (n,d) where n is the number of data points and d is the dimension of each data point (make sure d is at least 1).
+Y: dependent variables, np array of dimensions (n,).
+iterations: integer, number of iterations to optimize the parameters.
+
+ex:
+mu_pred = KF.fit(X, Y, 1000)
+
+Optional arguments:
+
+batch_size: either an integer, a float between 0 and 1 or False (default). 
+If an integer, this determines the batch size. 
+If between 0 and 1, the batch size is the proportion of the data set (ex: 0.25 of the data set is used per batch). 
+If False each batch is the full data set.
+It is recommended to use less than the full data set for training.
+ex: mu_pred = KF.fit(X, Y, 1000, batch_size = 50)
+
+optimizer: string. Either "SGD" or "Nesterov". Determines the update rule. Default is "SGD".
+ex: mu_pred = KF.fit(X, Y, 1000, optimizer = "Nesterov")
+
+learning_rate: small float. Default is 0.1. Determines the size of the updates.
+ex: mu_pred = K.fit(X, Y, 10000, learning_rate = 0.2).
+
+beta: float beween 0 and 1. Only used for the Nesterov update rule. Default is 0.9.
+ex: mu_pred = K.fit(X, Y, 10000, beta = 0.5).
+
+show_it: integer, how often to show the number of iterations done. Default is 100. 
+ex: mu_pred = K.fit(X, Y, 10000, show_it = 1000).
+
+regu_lambda: small float. Determines the amount of regularization. Default is 0.000001. 
+It is recommended to leave this as a small positive value to avoid singular matrices. Experimental data suggests that values as small as 1e-10 yield stable results. 
+ex: mu_pred = K.fit(X, Y, 10000, regu_lambda = 1e-10).
+
+.predict()
+
+Mandatory arguments:
+X_test: np array, of dimension (m,d) where d is as for X.
+Predicts the values of X_test based on the oprimized kernel. 
+ex: pred = KF.predict(X_test)
+
+Optional arguments:
+regu_lambda : small float. Default is 0.000001. It is recommended to use the same float as the one used in the fit function.
+
+.para_hist
+Array of size (iterations, mu.shape). Contains the history of each optimized parameter.
+
+.rho_values
+Array of size (iterations,). Contains the history of the values of rho.
+
+.grad_hist
+Array of size (iterations, mu.shape). Contains the history of the gradient of each parameter.
+
