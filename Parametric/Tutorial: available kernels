@@ -1,16 +1,33 @@
 Frechet version:
 
-"RBF" : Gaussian kernel https://en.wikipedia.org/wiki/Radial_basis_function_kernel
-"inverse power": see inverse quadric (http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#multiquadric) 
-                 and Rational Quadratic Kernel (https://www.cs.toronto.edu/~duvenaud/cookbook/).
+"RBF" : Gaussian kernel https://en.wikipedia.org/wiki/Radial_basis_function_kernel. 
+Parameters should be a np array of dimension (1,), contains the sigma parameter (and not sigma^2)
 
+"Rational quadratic": see inverse quadric (http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#multiquadric) 
+                      and Rational Quadratic Kernel (https://www.cs.toronto.edu/~duvenaud/cookbook/).
+Parameters should be of dimension (2,). First argument is the alpha power (should be positive), the second is the beta parameter.                 
+                
+"Sigmoid": sigmoid or hyperbolic tanh kernel (see http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#sigmoid)
+Parameters should be of dimension (2,). First argument is alpha, the second argument is c.
+
+"gaussian multi": linear combination of gaussian. 
+Parameters should be of dimension (2, n), where n is the number of gaussians to use. First row contain the sigma variables (the variances), the second contains the linear factors.
 
 Autograd version:
 
-"RBF"'. Gaussian kernel https://en.wikipedia.org/wiki/Radial_basis_function_kernel
-"inverse power": see inverse quadric (http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#multiquadric) 
-                 and Rational Quadratic Kernel (https://www.cs.toronto.edu/~duvenaud/cookbook/).
-"poly": Polynomial kernel https://en.wikipedia.org/wiki/Polynomial_kernel (Prone to instabilities).
-"Sigmoid": sigmoid kernel (see: http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#Hyperbolic%20Tangent%20(Sigmoid)%20Kernel)
+"RBF" : Gaussian kernel https://en.wikipedia.org/wiki/Radial_basis_function_kernel. 
+Parameters should be a np array of dimension (1,), contains the sigma parameter (and not sigma^2)
 
+"Rational quadratic": see inverse quadric (http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#multiquadric) 
+                      and Rational Quadratic Kernel (https://www.cs.toronto.edu/~duvenaud/cookbook/).
+Parameters should be of dimension (2,). First argument is the alpha power (should be positive), the second is the beta parameter.                 
+                
+"Sigmoid": sigmoid or hyperbolic tanh kernel (see http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#sigmoid)
+Parameters should be of dimension (2,). First argument is alpha, the second argument is c.
+
+"gaussian multi": linear combination of gaussian. 
+Parameters should be of dimension (2, n), where n is the number of gaussians to use. First row contain the sigma variables (the variances), the second contains the linear factors.
+
+"poly": Polynomial kernel https://en.wikipedia.org/wiki/Polynomial_kernel (Prone to instabilities).
+Parameters should be of dimension (3,). The fist parameter contains the a term, the second the b term and the third the power. 
 
