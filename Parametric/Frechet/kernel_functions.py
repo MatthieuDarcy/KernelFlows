@@ -41,7 +41,7 @@ def kernel_sigmoid(matrix_1, matrix_2, parameters):
     K = np.tanh(alpha *matrix + beta)
     return K
 
-def kernel_inverse_power(matrix_1, matrix_2, parameters):
+def kernel_rational_quadratic(matrix_1, matrix_2, parameters):
     alpha = parameters[0]
     beta = parameters[1]
     epsilon = 0.0001
@@ -93,8 +93,8 @@ def kernel_gaussian_linear(matrix_1, matrix_2, parameters):
 """A dictionnary containing the different kernels. If you wish to build a custom 
  kernel, add the function to the dictionnary.
 """
-kernels_dic = {"RBF" : kernel_RBF,"poly": kernel_poly, "Laplacian": kernel_laplacian, 
-               "Sigmoid": kernel_sigmoid, "inverse_power": kernel_inverse_power,
+kernels_dic = {"RBF" : kernel_RBF,"poly": kernel_poly, "laplacian": kernel_laplacian, 
+               "sigmoid": kernel_sigmoid, "rational quadratic": kernel_rational_quadratic,
                "inverse_multiquad": kernel_inverse_multiquad, "quadratic" : kernel_quad,
                "poly": kernel_poly, "inverse_power_alpha": kernel_inverse_power_alpha,
                "gaussian multi": kernel_gaussian_linear}
