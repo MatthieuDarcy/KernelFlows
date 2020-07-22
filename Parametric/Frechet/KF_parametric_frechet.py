@@ -12,63 +12,6 @@ import math
 from kernel_functions import kernels_dic
 from nabla_functions import nabla_dic
 
-
-#%% 
-        
-"""
-# Instructions:
-    
-# 1) Initialize a instance. 
-# Kernel name is a string, with the name of kernel 
-# (see dictionnary below). For a custome kernel, create the function and add 
-# the name to the dictionnary.
-# Mu is a np array with all the parameters of your kernel (depends on the kernel).
-        
-KF = KernelFlowsP(kernel_name, mu)
-
-# 2) To learn the best parameters, call the fit function
-
-# Mandatory arguments:
-# data: np array with both X and Y (independent and dependent variables). 
-
-# iterations: integer
-
-# Optional arguments
-# batch_size: either an integer, a float between 0 and 1 or False. If an integer,
-# this determines the batch size. If between 0 and 1, the batch size is the proportion
-# of the data set (ex: 0.25 of the data set is used per batch). If False (default),
-# each batch is the full data set (not recommended except for small data sets).
-
-# optimizer: string. Either "SGD" or "Nesterov". Determines the update rule. Default
-# is "SGD".
-
-# learning_rate: small float. Default is 0.1
-
-# beta: float beween 0 and 1. Only used for the Nesterov update rule. Default is 0.9.
-
-# show_it: how often to show the number of iterations done. Default is 100. 
-
-# regu_lambda: small float. Determines the amount of regularization. Default is 0.0001.  
-
-
-mu_pred = KF.fit(data, iterations)
-
-# 3) To generate a prediction, call the predict function
-    
-# test: a np array. The dimension should be d-1 compared to the data (i.e. should 
-# have all independent variables, but not the dependent varaible Y). Returns 
-# 1 dimensional array.  
-pred = KF.predict(test)
-
-# IMPORTANT. If your kernel is a standard kernel availabel from sklearn.kernel_ridge.KernelRidge
-# it is strongly recommended you use this instead, as it is more efficient. Note 
-# for the RBF kernel, gamma = 1/(2*sigma**2)
-
-# For use outside of this file, make sure the file is in the same directory and 
-# use "from KF_parametric_class import KernelFlowsP" and do everything as above
-"""
-
-
 #%%
     
 """We define several useful functions"""
@@ -382,6 +325,3 @@ if __name__ == "__main__":
     mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov", batch_size = 50, show_it = 5000)
     print(mu_pred)
 
-#%%
-
-# pred = K.predict(X[:50])
