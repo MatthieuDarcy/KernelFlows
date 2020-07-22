@@ -8,7 +8,7 @@ Created on Wed Jul 22 14:32:37 2020
 
 import autograd.numpy as np
 from matrix_operations_autograd import norm_matrix
-from matrix_operations_autrograd import inner_matrix
+from matrix_operations_autograd import inner_matrix
 
 
 #%%
