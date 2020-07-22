@@ -45,15 +45,7 @@ def batch_creation(data, batch_size, sample_proportion = 0.5):
     
     return sample_indices, batch_indices
 
-# Splits the data into the target and predictor variables.
-def split(data):
-    X = data[:, :-1]
-    Y = data[:, -1]
-    
-    return X, Y
-
-
-# Generate a prediction
+# Generate a prediction using kernel regression
 def kernel_regression(X_train, X_test, Y_train, param, kernel_keyword = "RBF", regu_lambda = 0.000001):
     kernel = kernels_dic[kernel_keyword]
 
@@ -67,15 +59,8 @@ def kernel_regression(X_train, X_test, Y_train, param, kernel_keyword = "RBF", r
     
     return prediction
 
-def replace_nan(array):
-    for i in range(array.shape[0]):
-        if math.isnan(array[i]) == True:
-            print("Found nan value, replacing by 0")
-            array[i] = 0
-    return array
 
-def sample_size_linear(iterations, range_tuple):
-    
+def sample_size_linear(iterations, range_tuple):    
     return np.linspace(range_tuple[0], range_tuple[1], num = iterations)[::-1]
             
 #%% Rho function
@@ -90,14 +75,8 @@ def pi_matrix(sample_indices, dimension):
     return pi
 
 
-
 def rho(parameters, matrix_data, Y_data, sample_indices,  kernel_keyword= "RBF"):
     kernel = kernels_dic[kernel_keyword]
-    # norm_square = np.sum(np.square(matrix_data), axis = 1)
-    # norm_square = np.reshape(norm_square, (-1,1))
-    # inner_matrix = np.matmul(matrix_data, np.transpose(matrix_data))
-    
-    # norm_diff = -2 * inner_matrix + norm_square + np.transpose(norm_square)
     
     kernel_matrix = kernel(matrix_data, matrix_data, parameters)
     
@@ -160,7 +139,7 @@ def frechet_grad(parameters, X_data, Y_data, sample_indices, kernel_keyword= "RB
     gradient = ((1-rho)*np.matmul(np.transpose(y_hat), np.matmul(nabla_matrix,y_hat)) - np.matmul(np.transpose(z_hat), np.matmul(nabla_matrix, z_hat)))
     gradient = -gradient/bottom
     gradient = np.squeeze(gradient)
-    #print(gradient, rho)
+
     return gradient, rho
 
 
