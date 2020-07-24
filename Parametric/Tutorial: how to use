@@ -1,5 +1,4 @@
-
-Quick tutorial:
+QUICK TUTORIAL
 
 0) Import.
 from KF_parametric_frechet import KernelFlowsP
@@ -23,12 +22,11 @@ mu_pred = KF.fit(X, Y, iterations, batch_size = batch_size)
 pred = KF. predict(X_test)
 
 
+FOR CATEGORICAL VERSIOM:
+Exact same, but make sure that your Y vector a one hot vector of the shape (n,c) where c is the number of categories, with a only 1 and 0s depending on the class.
+(see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html).
 
-"Laplacian": kernel_laplacian, 
-               "Sigmoid": kernel_sigmoid, "inverse_power": kernel_inverse_power,
-               "inverse_multiquad": kernel_inverse_multiquad, "quadratic" : kernel_quad,
-               "poly": kernel_poly, "inverse_power_alpha": kernel_inverse_power_alpha,
-               "gaussian multi": kernel_gaussian_linear}
+
 Attributes:
 
 .fit()
