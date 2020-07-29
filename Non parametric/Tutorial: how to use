@@ -1,0 +1,129 @@
+QUICK TUTORIAL
+
+0) Import.
+from KF_NP_frechet import KernelFlows
+
+1) Initialize a instance. 
+Kernel name is a string, with the name of kernel (see the other file for a list). 
+mu is a np array with all the parameters of your kernel (depends on the kernel).
+
+mu = np.array([1.0])
+kernel_name = "RBF"
+KF = KernelFlowsP(kernel_name, mu)
+
+2) To learn the best parameters, call the fit function.
+iterations = 1000
+batch_size = 64
+mu_pred = KF.fit(X, Y, iterations, batch_size = batch_size, learning_rate = 0.1, type_epsilon = "relative")
+
+3) Generate a prediction using the optimized kernel.
+pred = KF. predict(X_test)
+
+
+FOR CATEGORICAL VERSIOM:
+Exact same, but make sure that your Y vector a one hot vector of the shape (n,c) where c is the number of categories, with a only 1 and 0s depending on the class.
+(see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html).
+
+
+Attributes:
+
+.fit()
+MOST IMPORTANT ARGUMENTS: X, Y, iterations, batch_size, learning_rate, type_epsilon and record_hist (for large datasets/many iterations) for the fit function. For the predict function, epsilon_choice. 
+Everything else can be left on default and yield good results.
+
+Mandatory arguments:
+
+X: independent variables, np array of dimensions (n,d) where n is the number of data points and d is the dimension of each data point (make sure d is at least 1).
+Y: dependent variables, np array of dimensions (n,).
+iterations: integer, number of iterations to optimize the parameters.
+
+ex:
+mu_pred = KF.fit(X, Y, 1000)
+
+Optional arguments:
+
+batch_size: either an integer, a float between 0 and 1 or False (default). 
+If an integer, this determines the batch size. 
+If between 0 and 1, the batch size is the proportion of the data set (ex: 0.25 of the data set is used per batch). 
+If False each batch is the full data set.
+It is recommended to use less than the full data set for training.
+ex: mu_pred = KF.fit(X, Y, 1000, batch_size = 50)
+
+
+learning_rate: small float. Default is 0.1. Determines the size of the updates. 
+ex: mu_pred = K.fit(X, Y, 10000, learning_rate = 0.2).
+
+type_epsilon: "string". There are three ways that epsilon may be determined:
+  1) "relative" (default):  epsilon is chosen at each step so that the maximum relative translation (||x_old -x_new||/||x_old||) 
+  is epsilon as a percentage(ex: epsilon is 0.1 means translation by 10%).
+  2) "absolute": epsilon is chosen at each step so that the maximum absolute translation (||x_old -x_new||) is epsilon.
+  3) "usual":epsilon is the ussual epsilon parametr in Gradient Descent.
+Please note that each each type may yield vastly different results and that "usual" is not recommended.  
+
+show_it: integer, how often to show the number of iterations done. Default is 100. 
+ex: mu_pred = K.fit(X, Y, 10000, show_it = 1000).
+
+regu_lambda: small float. Determines the amount of regularization. Default is 0.000001. 
+It is recommended to leave this as a small positive value to avoid singular matrices. Experimental data suggests that values as small as 1e-10 yield stable results. 
+ex: mu_pred = K.fit(X, Y, 10000, regu_lambda = 1e-10).
+
+record_hist: boolean (True or False). Determines whether to record the history of the points. If you are training on a very large data set or for many iterations, turn this off.
+For each iteration, a copy of the training data set is created, which can be too big.
+
+.predict()
+
+Mandatory arguments:
+X_test: np array, of dimension (m,d) where d is as for X.
+Predicts the values of X_test based on the oprimized kernel. 
+ex: pred = KF.predict(X_test)
+
+Optional arguments:
+regu_lambda : small float. Default is 0.000001. It is recommended to use the same float as the one used in the fit function.
+
+epsilon choic: string. There are three options:
+ 1) "new": a new epsilon is computed for the test set at each iteration based on the epsilon type chosen for the fit function.
+ 2) "combination" (default): epsilon is chosen at each step to be the minimum between the new epsilon and the epsilon of the training set.
+ 3) "historic": epsilon is the same as the training set. 
+ New and combination have similar performance, but combination seems to perform slighlty better. Historic is not recommended.
+ 
+.flow_transform()
+ 
+Mandatory arguments:
+X_test: np array, of dimension (m,d) where d is as for X.
+iterations: up to which iteration of the flow to use
+Returns a test set transformed through the flow
+ex: test_transformed = KF.predict(X_test, 1000).
+
+Optional arguments:
+epsilon choice: same as .predict().
+
+
+.points_hist
+Array of size (iterations, X:shqpe). Contains the history of the training set transformed through the flow
+
+.rho_values
+Array of size (iterations,). Contains the history of the values of rho.
+
+.epsilon
+Array of size (iterations,). Contains the history of epsilon
+
+.batch_hist
+Array of size (iterations, batch_size, dimensions). Contains the history of the batches.
+
+.coeff
+Array of size (iterations, batch_size). COntains the history of regression coefficients in feature space.
+
+
+
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
