@@ -47,7 +47,7 @@ def nabla_RBF(X,  parameters):
     #print(derivative_matrix[0])
     return derivative_matrix, batch_matrix
 
-def nabla_inverse_power(X, parameters):
+def nabla_rational_quad(X, parameters):
     # Computing the Kernel matrix
     matrix_norm = norm_matrix(X, X)
     alpha = parameters[0]
@@ -85,4 +85,4 @@ def nabla_polynomial(X,parameters):
         derivative_matrix[element, :, element] *= 2
     return derivative_matrix, batch_matrix
            
-nabla_dic = {"RBF" : nabla_RBF, "inverse power" : nabla_inverse_power, "polynomial" : nabla_polynomial}
+nabla_dic = {"RBF" : nabla_RBF, "rational quadratic" : nabla_rational_quad, "polynomial" : nabla_polynomial}
