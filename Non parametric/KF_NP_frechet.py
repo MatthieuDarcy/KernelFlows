@@ -6,7 +6,7 @@ Created on Wed Apr  1 17:26:44 2020
 @author: matth
 """
 
-import autograd.numpy as np
+import numpy as np
 import math
 
 from kernel_functions import kernels_dic
@@ -355,7 +355,7 @@ if __name__ == "__main__":
             d4.append((-a * element +b) * np.cos(element)+ normal(0, noise))
         
         return np.array([d1, d2]).T, np.array([d3, d4]).T
-    N = 80
+    N = 60
     a = 1.5
     b = -2 
     start = 0
@@ -374,36 +374,31 @@ if __name__ == "__main__":
     Y = np.expand_dims(Y, axis = 1)
     labels = data[:, -1]
     
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
-    train_label = np.squeeze(Y_train)
-    test_label = np.squeeze(Y_test)
     
-    plt.scatter(X_train[:, 0], X_train[:, 1], c= train_label)
-    plt.scatter(X_test[:, 0], X_test[:, 1], c= test_label)
+    plt.scatter(X[:, 0], X[:, 1], c= labels)
     plt.title("Swiss Roll Data set")
 #%%
     """ Fitting Kernel Flows"""
     mu = np.array([np.sqrt(2)])
     iterations = 10000
     KF = KernelFlowsNP("RBF", mu)
-    train_transformed = KF.fit(X_train, Y_train, iterations, batch_size = False, show_it = 2000, learning_rate = 0.2, type_epsilon = "relative")
+    train_transformed = KF.fit(X, Y, iterations, batch_size = False, show_it = 2000, learning_rate = 0.2, type_epsilon = "relative")
 #%%    
     """ Plotting the results"""
     # Change this parameter to view different iterations
     it = 2000
     plt.figure()
     plt.title("Train at iteration {}".format(it))
-    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= train_label)
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
     
     it = 5000
     plt.figure()
     plt.title("Train at iteration {}".format(it))
-    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= train_label)
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
     
     it = 10000
     plt.figure()
     plt.title("Train at iteration {}".format(it))
-    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= train_label)
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
 
 
