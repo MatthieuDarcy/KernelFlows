@@ -1,0 +1,11 @@
+Frechet version:
+
+"RBF" : Gaussian kernel https://en.wikipedia.org/wiki/Radial_basis_function_kernel. 
+Parameters should be a np array of dimension (1,), contains the sigma parameter (and not sigma^2)
+
+"Rational quadratic": see inverse quadric (http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#multiquadric) 
+                      and Rational Quadratic Kernel (https://www.cs.toronto.edu/~duvenaud/cookbook/).
+Parameters should be of dimension (2,). First argument is the alpha power (should be positive), the second is the beta parameter.                 
+
+"polynomial": Polynomial kernel https://en.wikipedia.org/wiki/Polynomial_kernel
+Parameters should be a np array of dimension (2,). Firt argument is the power, second is the free factor.
