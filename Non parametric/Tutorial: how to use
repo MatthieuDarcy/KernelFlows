@@ -34,7 +34,7 @@ Everything else can be left on default and yield good results.
 Mandatory arguments:
 
 X: independent variables, np array of dimensions (n,d) where n is the number of data points and d is the dimension of each data point (make sure d is at least 1).
-Y: dependent variables, np array of dimensions (n,).
+Y: dependent variables, np array of dimensions (n,1).
 iterations: integer, number of iterations to optimize the parameters.
 
 ex:
