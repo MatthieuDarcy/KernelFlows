@@ -277,29 +277,29 @@ class KernelFlowsP():
 
 #%%
         
-# if __name__ == "__main__":
-#     # Generating data according to RBF kernel, true gamma is 0.1
-#     from autograd.numpy.random import uniform
-#     def data_set_RBF(dimensions, mu_correct):
-#         # a = normal(scale=0.2, size = size)
-#         values = uniform(-10, 10, dimensions)
-#         b = []
-#         for element in values:
-#             b.append( np.exp(-np.linalg.norm(element)**2 /(2*mu_correct[0]**2)))
-#         b = np.array(b) #+ normal(0, 0.25)
-#         return b, values
+if __name__ == "__main__":
+    # Generating data according to RBF kernel, true gamma is 0.1
+    from autograd.numpy.random import uniform
+    def data_set_RBF(dimensions, mu_correct):
+        # a = normal(scale=0.2, size = size)
+        values = uniform(-10, 10, dimensions)
+        b = []
+        for element in values:
+            b.append( np.exp(-np.linalg.norm(element)**2 /(2*mu_correct[0]**2)))
+        b = np.array(b) #+ normal(0, 0.25)
+        return b, values
 
-#     mu_correct = np.array([10.0])
-#     Y, X = data_set_RBF((100, 1), mu_correct)
-#     data_set = np.concatenate((X,np.expand_dims(Y, 1)), axis = 1)
+    mu_correct = np.array([10.0])
+    Y, X = data_set_RBF((100, 1), mu_correct)
+    data_set = np.concatenate((X,np.expand_dims(Y, 1)), axis = 1)
     
-#     mu_1 = np.array([5.0])
-#     K = KernelFlowsP("RBF", mu_1)
-#     mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov",  batch_size = 50, show_it = 5000)
-#     print(mu_pred)
+    mu_1 = np.array([5.0])
+    K = KernelFlowsP("RBF", mu_1)
+    mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov",  batch_size = 50, show_it = 5000)
+    print(mu_pred)
     
-#     mu_2 = np.array([15.0])
-#     K = KernelFlowsP("RBF", mu_2)
-#     mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov", batch_size = 50, show_it = 5000)
-#     print(mu_pred)
+    mu_2 = np.array([15.0])
+    K = KernelFlowsP("RBF", mu_2)
+    mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov", batch_size = 50, show_it = 5000)
+    print(mu_pred)
 

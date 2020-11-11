@@ -67,42 +67,6 @@ def mmd(parameters, matrix_data, Y_data, sample_indices, kernel_keyword= "RBF", 
     
     return mean_1 + mean_2 - 2*cov
 
-# # Computes the frechet derivative for KF (equation 6.5 of the original paper)
-# def frechet(parameters, X, Y, sample_indices, kernel_keyword = "RBF", reg = default_lambda):
-#     Y_sample = Y[sample_indices]
-
-#     pi = pi_matrix(sample_indices, (sample_indices.shape[0], X.shape[0])) 
-#     lambda_term = reg
-    
-#     nabla = nabla_dic_NP[kernel_keyword]
-#     # Computing the nabla matrix and the regular matrix
-#     derivative_matrix, batch_matrix = nabla(X, parameters)
-
-#     # Computing the Kernel matrix Inverses
-#     sample_matrix = np.matmul(pi, np.matmul(batch_matrix, np.transpose(pi)))
-#     batch_inv = np.linalg.inv(batch_matrix + lambda_term * np.identity(batch_matrix.shape[0]))
-#     sample_inv = np.linalg.inv(sample_matrix + lambda_term * np.identity(sample_matrix.shape[0]))
-    
-    
-#     # Computing the top and bottom terms
-#     top = np.matmul(np.transpose(Y_sample), np.matmul(sample_inv, Y_sample))
-#     bottom = np.matmul(np.transpose(Y), np.matmul(batch_inv, Y))
-    
-#     # Computing z_hat and y_hat (see original paper)
-#     Z_hat = np.matmul(np.transpose(pi), np.matmul(sample_inv, np.matmul(pi, Y)))
-#     Y_hat = np.matmul(batch_inv, Y)
-#     #Computing rho   
-#     rho = 1- top/bottom
-    
-
-#     # Computing the Frechet derivative
-#     K_y = np.squeeze(np.matmul(derivative_matrix, Y_hat), axis = 2)
-#     K_z = np.squeeze(np.matmul(derivative_matrix, Z_hat), axis = 2)
-    
-#     g = 2*((1-rho)* Y_hat * K_y - Z_hat * K_z) 
-#     g = g/bottom
-#     return g, rho
-
 
 #%% 
 """We define several useful functions"""

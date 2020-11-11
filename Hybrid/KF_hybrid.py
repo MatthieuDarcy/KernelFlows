@@ -394,103 +394,29 @@ if __name__ == "__main__":
 #%%
     """ Fitting Kernel Flows"""
     mu = np.array([2.0])
-    iterations = 10
+    iterations = 10000
     KF = KernelFlowsHybrid("RBF", mu)
-    train_transformed = KF.fit(X, Y, iterations, batch_size = 0.5, show_it = 2000, learning_rate = 0.1)
-#     #%%    
-#     """ Plotting the results"""
-#     # Change this parameter to view different iterations
-#     it = 1000
-#     plt.figure()
-#     plt.title("Train at iteration {}".format(it))
-#     plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
+    train_transformed = KF.fit(X, Y, iterations, batch_size = False, show_it = 2000, learning_rate = 0.2)
+    #%%    
+    """ Plotting the results"""
+    # Change this parameter to view different iterations
+    it = 1000
+    plt.figure()
+    plt.title("Train at iteration {}".format(it))
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
     
-#     it = 5000
-#     plt.figure()
-#     plt.title("Train at iteration {}".format(it))
-#     plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
+    it = 5000
+    plt.figure()
+    plt.title("Train at iteration {}".format(it))
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
     
-#     it = 10000
-#     plt.figure()
-#     plt.title("Train at iteration {}".format(it))
-#     plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
-    
-#     # it = 20000
-#     # plt.figure()
-#     # plt.title("Train at iteration {}".format(it))
-#     # plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
-    
-#     it = iterations
-#     plt.figure()
-#     plt.title("Train at iteration {}".format(it))
-#     plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
-# #%%
-#     plt.figure()
-#     plt.title("parameter history")
-#     plt.plot(np.arange(iterations+1), KF.para_hist)
+    it = 10000
+    plt.figure()
+    plt.title("Train at iteration {}".format(it))
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
 
-
-# if __name__ == "__main__":
     
-#     """ Generating the swiss roll dataset"""
-#     from numpy.random import normal
-#     import matplotlib.pyplot as plt
-#     def spirals(N, start, end, a ,b, noise):
-#         interval  =  np.linspace(start, end , N)
-#         d1= []
-#         d2 = []
-#         d3 = []
-#         d4 = []
-#         for element in interval:
-#             d1.append((a* element -b) * np.sin(element) + normal(0, noise))
-#             d2.append((a * element - b) * np.cos(element)+ normal(0, noise))
-#             d3.append((-a* element +b) * np.sin(element)+ normal(0, noise))
-#             d4.append((-a * element +b) * np.cos(element)+ normal(0, noise))
-        
-#         return np.array([d1, d2]).T, np.array([d3, d4]).T
-#     N = 60
-#     a = 1.5
-#     b = -2 
-#     start = 0
-#     end = 2 * math.pi
-#     noise = 0
-    
-#     y1 = np.expand_dims(np.zeros(N) - 1, axis = 1)
-#     y2 = np.expand_dims(np.zeros(N) + 1, axis = 1)
-#     d1,d2 = spirals(N , start, end, a,b, noise)
-#     spiral_1 = np.concatenate((d1, y1), axis = 1)
-#     spiral_2 = np.concatenate((d2, y2), axis = 1)
-#     data = np.concatenate((spiral_1, spiral_2), axis = 0)
-    
-#     X = data[:, :-1]
-#     Y = data[:, -1]
-#     Y = np.expand_dims(Y, axis = 1)
-#     labels = data[:, -1]
-    
-    
-#     plt.scatter(X[:, 0], X[:, 1], c= labels)
-#     plt.title("Swiss Roll Data set")
-    
-#     from sklearn.model_selection import train_test_split
-#     X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size = 0.2)
-# #%%
-#     mu = np.array([1.6])
-#     iterations = 30000
-#     KF = KernelFlowsHybrid("RBF", mu)
-#     train_transformed = KF.fit(X_train, Y_train, iterations, batch_size = False, show_it = 2000, learning_rate = 0.1, type_epsilon = "relative", reg = 0.01)
-#     #%%    
-#     it = iterations
-#     plt.figure()
-#     plt.title("Train at iteration {}".format(it))
-#     plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= np.squeeze(Y_train))
-    
-# #%%
-#     test_transformed = KF.flow_transform(X_test, iterations, show_it = 5000)
-#     #%%
-#     plt.figure()
-#     plt.scatter(KF.test_history[-1][:, 0],KF.test_history[-1][:, 1], c = np.squeeze(Y_test))
-#     #plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= np.squeeze(Y_train))
-#     #%%
-#     train_trans = KF.flow_transform(X, iterations, show_it = 5000)
-#     plt.figure()
-#     plt.scatter(train_trans[:, 1],train_trans[:, 1], c = labels)
+    it = iterations
+    plt.figure()
+    plt.title("Train at iteration {}".format(it))
+    plt.scatter(KF.points_hist[it][:, 0], KF.points_hist[it][:, 1], c= labels)
