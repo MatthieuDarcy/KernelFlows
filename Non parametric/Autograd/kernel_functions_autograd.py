@@ -129,10 +129,17 @@ def kernel_periodic(matrix_1, matrix_2, parameters):
     p = parameters[0]
     l = parameters[1]
     matrix = norm_matrix(matrix_1, matrix_2)
-    K = np.exp(-np.sin(matrix*np.pi/p)/l**2)
+    K = np.exp(-np.sin(matrix*np.pi/p)**2/l**2)
     
     return K
-    
+
+# def kernel_logistic_1(matrix_1, matrix_2, parameters):
+#     sigma_1 = parameters[0]
+#     sigma_2 = parameters[1]
+#     sigma_3 = parameters[2]
+#     matrix = norm_matrix(matrix_1, matrix_2)
+#     K = np.exp(-np.sin(matrix*np.pi/sigma_2)**2/sigma_1**2)*np.exp(-matrix/ (sigma_3**2))
+#     return K
 
 """A dictionnary containing the different kernels. If you wish to build a custom 
  kernel, add the function to the dictionnary.
@@ -142,5 +149,6 @@ kernels_dic = {"RBF" : kernel_RBF,"poly": kernel_poly, "Laplacian": kernel_lapla
                "inverse_multiquad": kernel_inverse_multiquad, "quadratic" : kernel_quad,
                "poly": kernel_poly, "inverse_power_alpha": kernel_inverse_power_alpha,
                "gaussian multi": kernel_gaussian_linear, "Bernoulli": kernel_bernoulli,
-               "Local Periodic" : kernel_local_periodic, "Rational Quadratic and Gaussian": kernel_rational_quadratic_gaussian
+               "Local Periodic" : kernel_local_periodic, "Rational Quadratic and Gaussian": kernel_rational_quadratic_gaussian,
                }
+

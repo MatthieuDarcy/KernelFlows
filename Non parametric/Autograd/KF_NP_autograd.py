@@ -358,7 +358,6 @@ class KernelFlowsNPAutograd():
         return X_test
     
     def predict(self, X_test, show_it = False, reg = default_lambda, kernel_it = -1, epsilon_choice = "combination"):
-
         # Transforming using the flow
         if kernel_it > 0:
            flow_test = self.flow_transform(X_test, kernel_it, show_it = show_it, epsilon_choice = epsilon_choice)  
