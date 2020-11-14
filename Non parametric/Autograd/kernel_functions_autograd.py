@@ -121,7 +121,7 @@ def kernel_rational_quadratic_gaussian(matrix_1, matrix_2, parameters):
     
     matrix = norm_matrix(matrix_1, matrix_2)
     
-    K = c + delta_1*((beta**2 + matrix)**(-(alpha))) + delta_2*np.exp(-matrix/ (2* sigma**2))
+    K = c + delta_1**2*((beta**2 + matrix)**(-(alpha))) + delta_2**2*np.exp(-matrix/ (2* sigma**2))
     
     return K
     

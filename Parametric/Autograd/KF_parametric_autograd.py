@@ -47,17 +47,16 @@ def batch_creation(data, batch_size, sample_proportion = 0.5):
 
 
 # Generate a prediction
-def kernel_regression(X_train, X_test, Y_train, param, kernel_keyword = "RBF", regu_lambda = 0.000001):
+def kernel_regression(X_train, X_test, Y_train, param, kernel_keyword = "RBF", reg = 0.000001):
     kernel = kernels_dic[kernel_keyword]
 
     
     k_matrix = kernel(X_train, X_train, param)
-    k_matrix += regu_lambda * np.identity(k_matrix.shape[0])
+    k_matrix += reg * np.identity(k_matrix.shape[0])
     
     t_matrix = kernel(X_test, X_train, param)
     
     prediction = np.matmul(t_matrix, np.matmul(np.linalg.inv(k_matrix), Y_train))
-    
     return prediction
 
 def replace_nan(array):
@@ -83,9 +82,9 @@ def pi_matrix(sample_indices, dimension):
     return pi
 
 
-def rho(parameters, matrix_data, Y_data, sample_indices,  kernel_keyword= "RBF", regu_lambda = 0.000001):
-    kernel = kernels_dic[kernel_keyword]
-    
+# The rho function
+def rho(parameters, matrix_data, Y_data, sample_indices,  kernel_keyword= "RBF", reg = 0.000001):
+    kernel = kernels_dic[kernel_keyword]    
     kernel_matrix = kernel(matrix_data, matrix_data, parameters)
     
     pi = pi_matrix(sample_indices, (sample_indices.shape[0], matrix_data.shape[0]))   
@@ -94,13 +93,13 @@ def rho(parameters, matrix_data, Y_data, sample_indices,  kernel_keyword= "RBF",
     
     Y_sample = Y_data[sample_indices]
     
-    lambda_term = regu_lambda
+    lambda_term = reg
     inverse_data = np.linalg.inv(kernel_matrix + lambda_term * np.identity(kernel_matrix.shape[0]))
     inverse_sample = np.linalg.inv(sample_matrix + lambda_term * np.identity(sample_matrix.shape[0]))
     
-    top = np.dot(Y_sample, np.matmul(inverse_sample, Y_sample))
-    bottom = np.dot(Y_data, np.matmul(inverse_data, Y_data))
 
+    top = np.matmul(Y_sample.T, np.matmul(inverse_sample, Y_sample))
+    bottom = np.matmul(Y_data.T, np.matmul(inverse_data, Y_data))
     return 1 - top/bottom
 
 def l2(parameters, matrix_data, Y, batch_indices, sample_indices, kernel_keyword = "RBF"):
@@ -120,15 +119,15 @@ def l2(parameters, matrix_data, Y, batch_indices, sample_indices, kernel_keyword
 calculator function accesses the gradfunctions via a keyword"""
 
 # Gradient calculator function. Returns an array
-def grad_kernel(parameters, X_data, Y_data, sample_indices, kernel_keyword= "RBF", regu_lambda = 0.000001):
+def grad_kernel(parameters, X_data, Y_data, sample_indices, kernel_keyword= "RBF", reg = 0.000001):
     grad_K = value_and_grad(rho)
-    rho_value, gradient = grad_K(parameters, X_data, Y_data, sample_indices, kernel_keyword, regu_lambda = regu_lambda)
+    rho_value, gradient = grad_K(parameters, X_data, Y_data, sample_indices, kernel_keyword, reg = reg)
     return rho_value, gradient
 
 
 #%% The class version of KF
     
-class KernelFlowsP():
+class KernelFlowsPAutograd():
     
     def __init__(self, kernel_keyword, parameters):
         self.kernel_keyword = kernel_keyword
@@ -165,12 +164,12 @@ class KernelFlowsP():
         
     
     def fit(self, X, Y, iterations, batch_size = False, optimizer = "SGD", 
-            learning_rate = 0.1, beta = 0.9, show_it = 100, regu_lambda = 0.000001, 
+            learning_rate = 0.1, beta = 0.9, show_it = 100, reg = 0.000001, 
             adaptive_size = False, adaptive_range = (), proportion = 0.5, reduction_constant = 0.0):            
 
         self.set_LR(learning_rate)
         self.set_beta(beta)
-        self.regu_lambda = regu_lambda
+        self.reg = reg
         
         self.X_train = np.copy(X)
         self.Y_train = np.copy(Y)
@@ -215,7 +214,7 @@ class KernelFlowsP():
             # Changes parameters according to SGD rules
             if optimizer == "SGD":
                 rho, grad_mu = grad_kernel(self.parameters, X_data, Y_data, 
-                                           sample_indices, self.kernel_keyword, regu_lambda = regu_lambda)
+                                           sample_indices, self.kernel_keyword, reg = reg)
                 if  rho > 1 or rho < 0:
                     print("Warning, rho outside [0,1]: ", rho)
                 else:
@@ -225,7 +224,7 @@ class KernelFlowsP():
             # Changes parameters according to Nesterov Momentum rules     
             elif optimizer == "Nesterov":
                 rho, grad_mu = grad_kernel(self.parameters - learning_rate * beta * momentum, 
-                                               X_data, Y_data, sample_indices, self.kernel_keyword, regu_lambda = regu_lambda)
+                                               X_data, Y_data, sample_indices, self.kernel_keyword, reg = reg)
                 if  rho > 1 or rho < 0:
                     print("Warning, rho outside [0,1]: ", rho)
                 else:
@@ -251,11 +250,11 @@ class KernelFlowsP():
                 
         return self.parameters
     
-    def predict(self,test, regu_lambda = 0.000001):
+    def predict(self,test, reg = 0.000001):
          
         X_train = self.X_train
         Y_train = self.Y_train
-        prediction = kernel_regression(X_train, test, Y_train, self.parameters, self.kernel_keyword, regu_lambda = regu_lambda) 
+        prediction = kernel_regression(X_train, test, Y_train, self.parameters, self.kernel_keyword, reg = reg) 
 
         return prediction
 
@@ -279,12 +278,12 @@ if __name__ == "__main__":
     data_set = np.concatenate((X,np.expand_dims(Y, 1)), axis = 1)
     
     mu_1 = np.array([1.0])
-    K = KernelFlowsP("RBF", mu_1)
+    K = KernelFlowsPAutograd("RBF", mu_1)
     mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov",  batch_size = 50, show_it = 5000)
     print(mu_pred)
     
     mu_2 = np.array([15.0])
-    K = KernelFlowsP("RBF", mu_2)
+    K = KernelFlowsPAutograd("RBF", mu_2)
     mu_pred = K.fit(X, Y, 10000, optimizer = "Nesterov", batch_size = 50, show_it = 5000)
     print(mu_pred)
 

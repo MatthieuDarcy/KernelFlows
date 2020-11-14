@@ -334,6 +334,7 @@ class KernelFlowsNPAutograd():
             coeff = self.coeff[i]
             X_batch = self.batch_hist[i]
             learning_rate = self.LR[i]
+            
                 
             # Computing the regression matrix
             test_matrix= kernel(X_test, X_batch, self.parameters)
