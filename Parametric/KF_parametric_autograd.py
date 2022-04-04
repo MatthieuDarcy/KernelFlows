@@ -24,7 +24,6 @@ class GPRegressor():
         self.parameters = np.copy(parameters)
         self.reg = reg
         
-    
     def rho(self, parameters, X_data, Y_data, sample_indices,  reg = 1e-5):
         
         # Construct the kernel matrix
@@ -33,14 +32,42 @@ class GPRegressor():
         
         # Extract a submatrix from the sample 
         kernel_sample = kernel_matrix[np.ix_(sample_indices, sample_indices)]
+        kernel_cross = kernel_matrix[np.ix_(np.arange(kernel_matrix.shape[0]), sample_indices)]
+        
+        #print(kernel_cross.shape)
         
         Y_sample = Y_data[sample_indices]
         
         
+        w_full = np.linalg.solve(kernel_matrix + reg*np.eye(kernel_matrix.shape[0]), Y_data)
+        
+        w_sample = np.linalg.solve(kernel_sample + reg*np.eye(kernel_sample.shape[0]), Y_sample)
+        
+        #w_mod = np.copy(w_full)
+        #w_mod[sample_indices] -= w_sample
+        
+        full_norm = w_full@kernel_matrix@w_full
+        sample_norm = w_sample@kernel_sample@w_sample
 
-        top = np.matmul(Y_sample.T, np.linalg.solve(kernel_sample + reg*np.eye(kernel_sample.shape[0]), Y_sample))
-        bottom = np.matmul(Y_data.T, np.linalg.solve(kernel_matrix + reg*np.eye(kernel_matrix.shape[0]), Y_data))
-        return 1 - top/bottom
+        top =  sample_norm - 2*w_full@kernel_cross@w_sample
+        
+        return 1 + top/full_norm
+    # def rho(self, parameters, X_data, Y_data, sample_indices,  reg = 1e-5):
+        
+    #     # Construct the kernel matrix
+        
+    #     kernel_matrix = self.kernel_function(X_data, X_data, parameters)
+        
+    #     # Extract a submatrix from the sample 
+    #     kernel_sample = kernel_matrix[np.ix_(sample_indices, sample_indices)]
+        
+    #     Y_sample = Y_data[sample_indices]
+        
+        
+
+    #     top = np.matmul(Y_sample.T, np.linalg.solve(kernel_sample + reg*np.eye(kernel_sample.shape[0]), Y_sample))
+    #     bottom = np.matmul(Y_data.T, np.linalg.solve(kernel_matrix + reg*np.eye(kernel_matrix.shape[0]), Y_data))
+    #     return 1 - top/bottom
     
     def rho_average(self,  parameters, X, Y,  reg = 1e-5, n= 1, batch_proportion = 1.0, sample_proportion = 0.5):
         """
@@ -71,9 +98,10 @@ class GPRegressor():
 
         """
         
-        print(parameters)
-        batch_indices = self.sample(X, batch_proportion) 
+        #print(parameters)
         
+        # Select a batch
+        batch_indices = self.sample(X, batch_proportion) 
         batch_indices = np.sort(batch_indices)
         
         #print(batch_indices)
@@ -94,28 +122,31 @@ class GPRegressor():
         
         for i in range(n):
 
-            
+            # Select a sub-sample
             sample_indices = self.sample(X_data, sample_proportion) 
             sample_indices = np.sort(sample_indices)
-
+            
             Y_sample = Y_data[sample_indices]
- 
             
-            # print(sample_indices)
-            # print(X_data[sample_indices])
-            # print(Y_sample)
-            # print(np.ix_(sample_indices, sample_indices))
+            # Extract a submatrix from the sample 
             kernel_sample = kernel_matrix[np.ix_(sample_indices, sample_indices)]
-            # print(kernel_sample)
+            kernel_cross = kernel_matrix[np.ix_(np.arange(kernel_matrix.shape[0]), sample_indices)]
             
+            # Compute rho using the polarization identity (appears to be more stable)
+            
+            
+            w_full = np.linalg.solve(kernel_matrix + reg*np.eye(kernel_matrix.shape[0]), Y_data)
+            w_sample = np.linalg.solve(kernel_sample + reg*np.eye(kernel_sample.shape[0]), Y_sample)
+            
+            
+            full_norm = w_full@kernel_matrix@w_full
+            sample_norm = w_sample@kernel_sample@w_sample
 
+            top =  sample_norm - 2*w_full@kernel_cross@w_sample
             
-            top = np.matmul(Y_sample.T, np.linalg.solve(kernel_sample + reg*np.eye(kernel_sample.shape[0]), Y_sample))
-            bottom = np.matmul(Y_data.T, np.linalg.solve(kernel_matrix + reg*np.eye(kernel_matrix.shape[0]), Y_data))
-            
-            
-            
-            loss+= 1 - top/bottom
+            bottom = full_norm
+
+            loss+= 1 + top/bottom
         return loss/n
 
     # This function creates a batch and associated sample
@@ -172,8 +203,7 @@ class GPRegressor():
         idx_sample = idx[: N_sample]
         
         return idx_sample
-        
-        
+    
         
         
     
@@ -241,8 +271,8 @@ class GPRegressor():
                     
                     rho, grad_mu = grad_rho(parameters, X, Y, reg = self.reg, n = n_samples, batch_proportion = batch_proportion)
                     
-                    if  rho > 1 + 1e-5 or rho < 0 - 1e-5:
-                        print("Warning, rho outside [0,1]: ", rho)
+                    if  rho < 0 - 1e-5:
+                        print("Warning, rho <0: ", rho)
                     else:
                         parameters -= learning_rate * grad_mu
                         
@@ -250,9 +280,9 @@ class GPRegressor():
                 # Changes parameters according to Nesterov Momentum rules     
                 elif optimizer == "Nesterov":
                     rho, grad_mu = grad_rho(parameters  - learning_rate * beta * momentum, X, Y, reg = self.reg, n = n_samples, sample_proportion= sample_proportion)
-
-                    if  rho > 1 + 1e-5 or rho < 0 - 1e-5:
-                        print("Warning, rho outside [0,1]: ", rho)
+                    
+                    if  rho < 0 - 1e-5:
+                       print("Warning, rho <0: ", rho)
                     else:
                         momentum = beta * momentum + grad_mu
                         parameters -= learning_rate * momentum
@@ -291,7 +321,7 @@ if __name__ == "__main__":
     
     import matplotlib.pyplot as plt
     
-    noise_level = 0.1
+    noise_level = 0.2
 
 
     def f(x, noise_level=noise_level):
@@ -321,15 +351,15 @@ if __name__ == "__main__":
     GP =  GPRegressor(kernel_RBF, sigma)
     
     
-    #%%
+    # #%%
     
-    X = np.arange(10)[:, None]
+    # X = np.arange(10)[:, None]
     
-    Y = np.arange(10)[:, None]+ 10
+    # Y = np.arange(10)[:, None]+ 10
     
-    #%%
+    # #%%
     
-    print(GP.rho_average(np.array([1e5]), X, Y, batch_proportion=1.0, n = 5))
+    # print(GP.rho_average(np.array([1e5]), X, Y, batch_proportion=1.0, n = 5))
     
     
     #%%
@@ -340,7 +370,6 @@ if __name__ == "__main__":
 
     print("The mean squared error on the test set is", np.round(mse(pred, fx), 3))
     
-    
     #%%
     
     fx_pred = GP.predict(x)
@@ -350,17 +379,66 @@ if __name__ == "__main__":
     plt.plot(x, fx_pred, label = "Predicted function")
     plt.legend()
     
+    # #%%
+    # K = GP.kernel_function(X, X, sigma)
+    # print(Y.T@np.linalg.solve(K + 1e-1*np.eye(K.shape[0]), Y))
+    
+    
+    # c = np.linalg.solve(K + 1e-1*np.eye(K.shape[0]), Y)
+    # print(c.T@K@c)
+    #%%
+    
+    # K = GP.kernel_function(X, X, sigma)
+    # alpha = np.linalg.solve(K + 1e-10*np.eye(K.shape[0]), Y)
+    
+    # sample = np.arange(100)
+    
+    
+    # K_sample =GP.kernel_function(X[sample], X[sample], sigma)
+    # beta = np.linalg.solve(K_sample + 1e-10*np.eye(K_sample.shape[0]), Y[sample])
+    
+    
+    # K_cross = GP.kernel_function(X, X[sample], sigma)
+    
+    # print(alpha@K_cross@beta)
+    
+    # print(Y[sample]@np.linalg.solve(K_sample + 1e-10*np.eye(K_sample.shape[0]), Y[sample]))
+    
+    #%%
+    
+    # sample_idx = GP.sample(X, 0.5)
+    # sample_idx = np.sort(sample_idx)
+    
+    # #%%
+    
+    # print(GP.rho(sigma, X,Y, sample_idx, reg = 1e-5))
+    # print(GP.rho_true(sigma, X,Y, sample_idx, reg = 1e-5))
+    
+    # #%%
+    # g = value_and_grad(GP.rho)
+    
+    # print(g(sigma, X, Y, sample_idx, reg = 1e-8))
+    # #print(GP.rho(sigma, X,Y, sample_idx))
+    
+    # g_true = value_and_grad(GP.rho_true)
+    
+    # print(g_true(sigma, X, Y, sample_idx, reg = 1e-8))
+    
+    
+    
+
+    
     
     #%% Use optimized parameters
     
     
-    sigma = np.array([5.0])
+    sigma = np.array([1.0])
     GP =  GPRegressor(kernel_RBF, sigma)
     
     #GP.fit(X, Y, parameters=np.array([5.0]), optimize = True)
     
     
-    opt_param = GP.optimize_parameters(X, Y, sigma, 1000, learning_rate = 0.5, optimizer = "Nesterov", n_samples= 10)
+    opt_param = GP.optimize_parameters(X, Y, sigma, 1000, learning_rate = 0.1, optimizer = "SGD", n_samples= 1)
     GP.fit(X, Y, parameters=opt_param)
     
     
