@@ -5,7 +5,7 @@ Created on Wed Jul 22 14:36:48 2020
 @author: matth
 """
 
-import numpy as np
+import autograd.numpy as np
 #%% Kernel operations
 
 # Returns the norm of the pairwise difference
