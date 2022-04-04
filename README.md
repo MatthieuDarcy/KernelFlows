@@ -1,13 +1,9 @@
 # KernelFlows
 
-Here you can find my implementation of the Kernel Flows algorithm (for details see: Kernel Flows: from learning kernels from data into the abyss, Houman Owhadi, Gene Ryan Yoo at https://arxiv.org/abs/1808.04475).
+My implementation of the Kernel Flows algorithm (for details see: Kernel Flows: from learning kernels from data into the abyss, Houman Owhadi, Gene Ryan Yoo at https://arxiv.org/abs/1808.04475).
 
-There are two main versions of Kernel Flows: parametric and non-parametric. Furthermore, we may fruther distinguish between KF for regression and KF for classification (which we call categorical).  The non-parametric is not available as of yet.
+I am currently am not maintaining this code so use at your own risk. The branch called 1.0 is the one I used for my MSc at Imperial. The branh called 2.0 contains many improvements, but is less complete and is based on what I have learned since. 
 
-The parametric version is implemented in two different ways: the first directly computes the Frechet derivative of the rho function, the second passes the rho function to autograd (see: https://github.com/HIPS/autograd) which computes its derivative. For advantages and disadvantages, see the readme file in the parametric folder.
+Generally, the non-parametric version is less stable than the non-parametric. Both require some fine-tuning and are not always optimal. The parametric folder contains a notebook containing a tutorial. 
 
-Quick overview:
-
-The basic idea behind kernel flows is that a good kernel is one which does not suffer significant loss when losing half of its training point.
-This leads to the formulation of a loss function, refered to as rho, which is a measure of how good the kernel is with half the points compared to the full points. 
-Kernel Flows then optimizes the parameters of the kernel through gradient descent on the rho function.
+If you have any questions, feel free to email me at mdarcy at caltech dot edu.
